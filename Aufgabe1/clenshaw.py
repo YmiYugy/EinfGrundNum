@@ -12,24 +12,22 @@ def clenshaw(alphas, xs):
     # Output:
     #   ys      Liste mit den y-Werten
 
-    if not alphas:
-        raise ValueError("alphas must not be empty")
-    elif not alphas[:-1]:
-        return xs * alphas[0]
-    else:
-        def betas(alphas, x):
-            alpha0 = alphas[0]
-            beta2 = alphas[-1]
-            alphas = alphas[:-1]
-            beta1 = alphas[-1] + 2*x*beta2
-            while alphas:
-                tmp = alphas[-1] + 2*x*beta1 - beta2
-                alphas = alphas[:-1]
-                beta2 = beta1
-                beta1 = tmp
-            return alpha0 + x*beta1 - beta2
-        betasVec =  np.vectorize(lambda x : betas(alphas, x))
-        return betasVec(xs)
+    alphas = list(alphas)
+    xs = np.array(xs)
+
+    if len(alphas) < 3:
+        alphas += (3 - len(alphas))*[0]
+
+    def betas(x):
+        beta2 = alphas[-1]
+        beta1 = alphas[-2] + 2*x*beta2
+        _alphas = alphas[1:-2]
+        while _alphas:
+            tmp = _alphas.pop() + 2*x*beta1 - beta2
+            beta2 = beta1
+            beta1 = tmp
+        return alphas[0] + x*beta1 - beta2
+    return list(map(betas, xs))
 
 
 # Aufgabenteil b)
@@ -96,7 +94,9 @@ def pn_tschebyscheff_iterative(alphas, xs):
     return results
 
 def chebyshevError(alphas, xs):
-    ys = abs(clenshaw(alphas, xs) - pn_tschebyscheff_iterative(alphas, xs))
+    clenshaw_np = np.array(clenshaw(alphas,xs))
+    tschebyscheff_np = np.array(pn_tschebyscheff_iterative(alphas,xs))
+    ys = abs(clenshaw_np-tschebyscheff_np)
     plt.title("Absoluter Fehler bei der Auswertung des Polynoms")
     plt.plot(xs, ys)
     plt.savefig("Absoluter Fehler.pdf", format="pdf")
