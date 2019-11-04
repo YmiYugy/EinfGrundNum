@@ -11,11 +11,15 @@ def evaluate_bspline_recursive(ts,xs,i,p):
     #   p       Ordnung des B-Splines, siehe Definition
     # Output:
     #   ys      Funktionswerte fuer x in xs
+    
     if i + p >= len(ts) - 1:
         raise ValueError("B-spline does not exist")
-    if p==0:
-        return np.array([ts[i] <= x < ts[i+1] for x in xs],dtype=float)
+    
     xs = np.array(xs, dtype=float)
+
+    if p==0:
+        return (ts[i] <= xs < ts[i+1]).astype(float)
+    
     ys = np.zeros_like(xs, dtype=float)
     if ts[i+p] != ts[i]:
         fs = (xs - ts[i])/(ts[i+p] - ts[i])
@@ -52,6 +56,6 @@ def assemble_grammatrix_bspline_recursive(ts,p):
     m = len(ts) - p - 1
 
     f = lambda i, x: evaluate_bspline_recursive(ts,[x],i,p)[0]
-    inner_product = lambda i, j: trapezregel_mInterval(lambda x: f(i,x)*f(j,x),0,1,50)
+    inner_product = lambda i, j: trapezregel_mInterval(lambda x: f(i,x)*f(j,x),0,1,100)
 
     return np.array([[inner_product(i,j) for i in range(m)] for j in range(m)])
