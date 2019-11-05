@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from functools import reduce
 
 # Aufgabenteil a)
 
@@ -30,7 +31,19 @@ def evaluate_bspline_recursive(ts,xs,i,p):
     return ys
 
 # Aufgabenteil b)
+def plot(p, n):
+    xs = np.linspace(0, 1, 100)
+    h= 1/6
+    hs = np.array([h*x for x in range(1,6)])
+    fig, axs = plt.subplots(p)
+    for i in range(1,p+1):
+        ts = np.zeros(i+1)
+        ts = np.concatenate((ts, hs))
+        ts = np.concatenate((ts, np.ones(i+1)))
+        for k in range(1,n+1):
+            axs[i].plot(xs, evaluate_bspline_recursive(ts, xs, k, i))
 
+plot(3, 3)
 
 
 # Aufgabenteil c)
