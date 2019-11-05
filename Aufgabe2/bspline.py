@@ -19,7 +19,7 @@ def evaluate_bspline_recursive(ts,xs,i,p):
     xs = np.array(xs, dtype=float)
 
     if p==0:
-        return (ts[i] <= xs < ts[i+1]).astype(float)
+        return np.array([1 if ts[i]<=x<ts[i+1] else 0 for x in xs])
     
     ys = np.zeros_like(xs, dtype=float)
     if ts[i+p] != ts[i]:
@@ -31,19 +31,22 @@ def evaluate_bspline_recursive(ts,xs,i,p):
     return ys
 
 # Aufgabenteil b)
-def plot(p, n):
+def plot(p):
+
     xs = np.linspace(0, 1, 100)
     h= 1/6
     hs = np.array([h*x for x in range(1,6)])
-    fig, axs = plt.subplots(p)
-    for i in range(1,p+1):
+    fig, axs = plt.subplots(p+1)
+    for i in range(0,p+1):
         ts = np.zeros(i+1)
         ts = np.concatenate((ts, hs))
         ts = np.concatenate((ts, np.ones(i+1)))
-        for k in range(1,n+1):
+        n=len(ts)-i-1
+        for k in range(0,n):
             axs[i].plot(xs, evaluate_bspline_recursive(ts, xs, k, i))
+    fig.savefig("splines.pdf")
 
-plot(3, 3)
+plot(3)
 
 
 # Aufgabenteil c)
