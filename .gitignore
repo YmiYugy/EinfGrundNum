@@ -103,3 +103,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 Aufgabe5/matrix_power.txt
+Aufgabe7/gerschgorin_50.txt
