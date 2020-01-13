@@ -58,23 +58,25 @@ def compute_qrdecomp_householder(A):
 
 # f)
 # Falls Matrix nicht im Verzeichnis liegt, von der Website runterladen.
-if not path.exists("matrix_qr2.txt"):
-	url = 'https://ins.uni-bonn.de/media/public/courses/WS1920/einfuhrung-in-die-grundlagen-der-numerik/matrix_qr2.txt'
-	urllib.request.urlretrieve(url, 'matrix_qr2.txt')
+matrix_file = "matrix_qr.txt" # Alternativ: matrix_qr2.txt
 
-A = np.loadtxt('matrix_qr2.txt', delimiter=',')
+if not path.exists(matrix_file):
+	url = 'https://ins.uni-bonn.de/media/public/courses/WS1920/einfuhrung-in-die-grundlagen-der-numerik/'+matrix_file
+	urllib.request.urlretrieve(url, matrix_file)
+
+A = np.loadtxt(matrix_file, delimiter=',')
 
 
 # Householder-Verfahren
-print("Householder-Verfahren. Zur Kontrolle:")
+print("Householder-Verfahren")
 
 start=time.time()
 q_h,r_h = compute_qrdecomp_householder(A)
 end = time.time()
 
+print("Ausführungsdauer: {:5.3f} Sekunden".format(end-start))
+print("Zur Kontrolle:")
 print("||Q||₂ =", np.linalg.norm(q_h, ord=2))
 print("||Q*Qᵀ - I||F =", np.linalg.norm(q_h @ q_h.T - np.identity(A.shape[0])))
 print("||R - np.triu(R)||F =",np.linalg.norm(r_h-np.triu(r_h)))
 print("||Q*R - A||F =", np.linalg.norm(q_h@r_h-A))
-
-print("Ausführungsdauer: {:5.3f} Sekunden".format(end-start))
